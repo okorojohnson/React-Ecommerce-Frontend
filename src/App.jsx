@@ -8,13 +8,13 @@ import { ProductsProvider } from "./context/ProductsContext";
 
 const App = () => {
   return (
-    <div>
+    <div  >
       <ProductsProvider>
         <Router>
           <Navbar />
           <Routes>
             <Route path="/" element={<Homepage />} />
-            <Route path="Catalogue" element={<Cataloguepage />} />
+            <Route path="Catalogue" element={<Cataloguepage />} />    
           </Routes>
           <Footer />
         </Router>

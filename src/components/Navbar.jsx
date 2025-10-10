@@ -112,7 +112,7 @@ const Navbar = () => {
           </button>
 
           <Link to="/" className="inline-flex items-center">
-            <img src="/sm_logo.svg" alt="SimpleWood" className="h-7" />
+            <img src="/logo.png" alt="SimpleWood" className="h-7" />
           </Link>
 
           <div className="flex items-center gap-4">
@@ -203,12 +203,9 @@ const Navbar = () => {
             <LucideSearch className="text-[7px] h-4 w-4 absolute right-[16px] text-[#B5B5B5]" />
           </div>
 
-          <div>
-            <img
-              src="/sm_logo.svg"
-              alt="SimpleWood"
-              className={logoShadowClass}
-            />
+          <div className="flex">
+            <img src="/logo.png" alt="SimpleWood" className={logoShadowClass} />
+            <span>SimpleWood.</span>
           </div>
 
           <div className="flex items-center justify-between gap-4 text-sm">

@@ -17,7 +17,7 @@ const Hero = () => {
       subtitle:
         "Find hand-curated collections that fit your style, space, and budget.",
       buttonText: "SHOP NOW",
-      images: ["/hero1.svg", "/hero2.svg", "/hero3.svg"],
+      images: ["/yellowchair.svg", "/whitechair.svg", "/brownchair.svg"],
     },
     {
       id: 2,
@@ -25,7 +25,7 @@ const Hero = () => {
       subtitle:
         "Find hand-curated collections that fit your style, space, and budget.",
       buttonText: "GET NOW",
-      images: ["/hero1.svg", "/hero2.svg", "/hero3.svg"],
+      images: ["/yellowchair.svg", "/whitechair.svg", "/brownchair.svg"],
     },
     {
       id: 3,
@@ -33,7 +33,7 @@ const Hero = () => {
       subtitle:
         "Find hand-curated collections that fit your style, space, and budget.",
       buttonText: "BUY NOW",
-      images: ["/hero1.svg", "/hero2.svg", "/hero3.svg"],
+      images: ["/yellowchair.svg", "/whitechair.svg", "/brownchair.svg"],
     },
     {
       id: 4,
@@ -41,7 +41,7 @@ const Hero = () => {
       subtitle:
         "Find hand-curated collections that fit your style, space, and budget.",
       buttonText: "BUY NOW",
-      images: ["/hero1.svg", "/hero2.svg", "/hero3.svg"],
+      images: ["/yellowchair.svg", "/whitechair.svg", "/brownchair.svg"],
     },
   ];
   return (
@@ -49,7 +49,7 @@ const Hero = () => {
       className="relative h-screen"
       style={{
         backgroundImage:
-          "linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(/bg_hero.svg)",
+          "linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(/heroBG.svg)",
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "center",
