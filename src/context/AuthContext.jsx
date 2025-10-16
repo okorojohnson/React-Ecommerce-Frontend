@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("user");
   };
 
-  // ✅ FIXED: moved logic inside function body
+  // register
   const register = async (name, email, password) => {
     setIsLoading(true);
     setError(null);
@@ -55,23 +55,79 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify({ name, email, password }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Registration failed");
+      if (!res.ok) throw new Error(data?.message || `Error: ${res.status}`);
       saveSession(data.token, data.user);
-      setIsLoading(false);
+      return data;
     } catch (error) {
       setError(error.message); // ✅ FIXED: removed quotes around error.message
+      throw error;
+    } finally {
+      isLoading(false);
     }
   };
 
-  const login = async (email, password) => {};
-  const fetchProfile = async () => {};
-  const logout = () => {};
+  // login
+  const login = async (email, password) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API_URL}/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || `Error: ${res.status}`);
+
+      saveSession(data.token, data.user);
+      return data;
+    } catch (error) {
+      setError(error.message); // ✅ FIXED: removed quotes around error.message
+      throw error;
+    } finally {
+      isLoading(false);
+    }
+  };
+
+  // profile
+  const fetchProfile = async () => {
+    if (!token) return;
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch(`${API_URL}/profile`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || `Error: ${res.status}`);
+      if (data?.user) setUser(data.user);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      return data;
+    } catch (error) {
+      clearSession();
+      setError(error.message); // ✅ FIXED: removed quotes around error.message
+
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const logout = () => {
+    clearSession();
+  };
 
   const contextValue = {
+    // states
     user,
     token,
     isLoading,
     error,
+    // functions
     register,
     login,
     fetchProfile,
