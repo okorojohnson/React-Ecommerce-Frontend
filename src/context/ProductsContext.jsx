@@ -1,41 +1,46 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-// Create context with default value to avoid undefined access
-const ProductsContext = createContext(null);
+const ProductsContext = createContext();
 
-// Custom hook for accessing context
+// custom hook
 export const useProducts = () => {
   const context = useContext(ProductsContext);
   if (!context) {
-    throw new Error("useProducts must be used within a ProductsProvider");
+    throw new Error(
+      "There was an issue with the custom context hook, ensure you're wrapping the provider around your app.js"
+    );
   }
   return context;
 };
 
-// Provider component
 export const ProductsProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // a spinner keeps showing as long as loading is true
   const [error, setError] = useState(null);
 
   const loadProducts = async () => {
     try {
       setLoading(true);
-      setError(null);
+      setError(null); // Any error before now, it is clear
 
-      const response = await fetch(
-        "https://e-commerce-backend-five-iota.vercel.app/api/products/"
-      );
+      // const response = await fetch(
+      //   "https://e-commerce-backend-beta-lemon.vercel.app/api/products/"
+      // );
 
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
-      }
+      const { mockProducts } = await import("../data/carenter.data.js");
 
-      const data = await response.json();
-      setProducts(data.products || data);
-    } catch (err) {
-      setError(err.message || "Failed to load products");
-      console.error("Failed to load products:", err);
+      // if (!response.ok) {
+      //   throw new Error(`Error: ${response.status}`);
+      // }
+
+      // const data = await response.json();
+
+      // adjust to how our api data looks.
+      setProducts(mockProducts);
+      console.log(mockProducts);
+    } catch (error) {
+      setError(error.message);
+      console.error("Failed to load products:", error);
     } finally {
       setLoading(false);
     }
@@ -45,23 +50,31 @@ export const ProductsProvider = ({ children }) => {
     loadProducts();
   }, []);
 
-  // Utility functions
-  const getProductsByCategory = (category) =>
-    products.filter(
+  // Simple functionalities needed in components
+  const getProductsByCategory = (category) => {
+    return products.filter(
       (product) => product.category?.toLowerCase() === category.toLowerCase()
     );
+  };
 
-  const searchProducts = (searchTerm) =>
-    products.filter(
+  // Product by ID
+  const getProductById = (id) => {
+    return products.find((product) => product._id === id || product.sku === id);
+  };
+
+  const searchProducts = (searchTerm) => {
+    return products.filter(
       (product) =>
         product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.description?.toLowerCase().includes(searchTerm.toLowerCase())
     );
+  };
 
   const getCategories = () => {
     const categories = products
       .map((product) => product.category)
       .filter(Boolean);
+
     return [...new Set(categories)];
   };
 
@@ -71,12 +84,16 @@ export const ProductsProvider = ({ children }) => {
   };
 
   const value = {
+    // State
     products,
     loading,
     error,
+
+    // Methods or funcs
     getProductsByCategory,
     getCategories,
     searchProducts,
+    getProductById,
     refetch,
   };
 
@@ -86,3 +103,4 @@ export const ProductsProvider = ({ children }) => {
     </ProductsContext.Provider>
   );
 };
+export default ProductsContext;

@@ -6,6 +6,8 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { ProductsProvider } from "./context/ProductsContext";
 import { AuthProvider } from "./context/AuthContext";
+import Accountpage from "./pages/Accountpage";
+import ProductDetailspage from "./pages/ProductDetailspage";
 
 const App = () => {
   return (
@@ -16,7 +18,9 @@ const App = () => {
             <Navbar />
             <Routes>
               <Route path="/" element={<Homepage />} />
-              <Route path="Catalogue" element={<Cataloguepage />} />
+              <Route path="/Catalogue" element={<Cataloguepage />} />
+              <Route path="/account" element={<Accountpage />} />
+              <Route path="/products/:id" element={<ProductDetailspage />} />
             </Routes>
             <Footer />
           </Router>
