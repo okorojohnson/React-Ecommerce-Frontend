@@ -6,46 +6,53 @@ import { PlusIcon } from "lucide-react";
 const ProductGrid = () => {
   // Context values
   const { products, loading, error } = useProducts();
-
-  // ✅ FIX: Remove duplicate declaration of items
   const items = Array.isArray(products) ? products : products?.data ?? [];
 
-  console.log(items.length);
-
-  const [showPrice, setShowPrice] = useState(null);
-
-  // Config
+  // Pagination constants
   const INITIAL_COUNT = 10;
   const STEP = 10;
+
+  // State management
   const [visibleCount, setVisibleCount] = useState(INITIAL_COUNT);
+  const [showPrice, setShowPrice] = useState(null);
 
   // Loading UI
-  if (loading)
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-64 bg-slate-200">
-        Loading products...
+        <div className="text-gray-600 font-medium">Loading products...</div>
       </div>
     );
+  }
 
   // Error UI
-  if (error)
+  if (error) {
     return (
-      <div className="text-red-500 text-center h-64 px-20 flex justify-center items-center font-bold text-xl capitalize">
-        Error Occurred. Try Again Later.
+      <div className="text-red-500 text-center h-64 px-20 flex justify-center items-center font-bold text-xl">
+        Error occurred. Try again later.
       </div>
     );
+  }
 
-  // Slice visible products
+  // Empty state
+  if (!items || items.length === 0) {
+    return (
+      <div className="flex justify-center items-center h-64 text-gray-500 font-medium">
+        No products available
+      </div>
+    );
+  }
+
+  // Get products to display
   const displayedProducts = items.slice(0, visibleCount);
+  const canSeeMore = visibleCount < items.length;
 
-  // Toggle price visibility
+  // Handle plus icon click to show/hide price
   const handlePlusClick = (productSku) => {
     setShowPrice(showPrice === productSku ? null : productSku);
   };
 
-  // See more logic
-  const canSeeMore = visibleCount < items.length;
-
+  // Handle see more / see less button
   const handleSeeMore = () => {
     if (canSeeMore) {
       setVisibleCount((c) => Math.min(c + STEP, items.length));
@@ -58,50 +65,69 @@ const ProductGrid = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-8">
       <div className="max-w-6xl mx-auto w-full">
-        {/* Product grid */}
+        {/* Product Grid */}
         <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 sm:gap-6 space-y-4 sm:space-y-6">
           {displayedProducts.map((product) => (
             <div key={product.sku} className="break-inside-avoid mb-4 sm:mb-6">
-              {/* Product Image */}
+              {/* Product Image Card */}
               <Link to={`/products/${product.sku}`} className="block">
-                <img
-                  src={product.images?.[0]?.url || "/placeholder.png"}
-                  alt={product.images?.[0]?.alt || product.name}
-                  className="w-full h-auto object-cover rounded-lg"
-                  loading="lazy"
-                />
+                <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                  <img
+                    src={
+                      product.images?.[0]?.url || "/placeholders/bg_hero.svg"
+                    }
+                    alt={product.images?.[0]?.alt || product.name}
+                    className="w-full h-auto object-cover"
+                    loading="lazy"
+                  />
+                </div>
               </Link>
 
-              {/* Product info */}
+              {/* Product Info Below Card */}
               <div className="mt-3 flex items-center justify-start gap-3">
+                {/* Plus Icon Button */}
                 <button
+                  type="button"
                   onClick={() => handlePlusClick(product.sku)}
                   className="flex-shrink-0 w-6 h-6 bg-[#7DB800] hover:bg-[#7DB800]/80 text-white rounded-full flex items-center justify-center transition-colors duration-200"
+                  aria-label={`${
+                    showPrice === product.sku ? "Hide" : "Show"
+                  } price for ${product.name}`}
                 >
-                  <PlusIcon size={14} />
+                  <PlusIcon className="w-4 h-4" />
                 </button>
-                <h3 className="text-sm font-light text-swBlack flex-1 mr-2">
+
+                {/* Product Name */}
+                <h3 className="text-sm font-light text-gray-900 flex-1 mr-2">
                   <Link
                     to={`/products/${product.sku}`}
-                    className="hover:underline"
+                    className="hover:underline line-clamp-2"
                   >
                     {product.name}
                   </Link>
                 </h3>
               </div>
 
-              {/* Price Display */}
+              {/* Price Display (shows when plus is clicked) */}
               {showPrice === product.sku && (
-                <div className="mt-2 p-2 bg-gray-100 rounded text-sm">
-                  <div className="flex items-center space-x-2">
-                    <span className="font-bold text-swBlack">
-                      ${product.price}
+                <div className="mt-2 p-3 bg-gray-100 rounded">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-bold text-gray-900">
+                      ${product.price?.toFixed(2) || "0.00"}
                     </span>
-                    {product.originalPrice > product.price && (
-                      <span className="text-gray-500 line-through text-xs">
-                        ${product.originalPrice}
-                      </span>
-                    )}
+                    {product.originalPrice &&
+                      product.originalPrice > product.price && (
+                        <span className="text-xs text-gray-600 line-through">
+                          ${product.originalPrice.toFixed(2)}
+                        </span>
+                      )}
+                    <span
+                      className={`text-xs font-semibold ${
+                        product.inStock ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      {product.inStock ? "In Stock" : "Out of Stock"}
+                    </span>
                   </div>
                 </div>
               )}
@@ -109,20 +135,21 @@ const ProductGrid = () => {
           ))}
         </div>
 
-        {/* See more button */}
-        <div className="text-center mt-8">
-          {items.length > INITIAL_COUNT && (
+        {/* See More / See Less Button */}
+        {items.length > INITIAL_COUNT && (
+          <div className="text-center mt-8">
             <button
-              aria-label={
-                canSeeMore ? "See More Products" : "Collapse Products"
-              }
+              type="button"
               onClick={handleSeeMore}
-              className="bg-[#7DB800] hover:bg-[#7DB800]/80 text-white px-8 py-3 rounded font-semibold transition-all duration-300 flex items-center gap-2 drop-shadow-lg mx-auto"
+              className="inline-flex items-center justify-center gap-2 bg-[#7DB800] hover:bg-[#7DB800]/80 text-white px-6 sm:px-8 py-3 rounded font-semibold transition-all duration-300 drop-shadow-lg"
+              aria-label={
+                canSeeMore ? "See more products" : "Collapse products"
+              }
             >
               {canSeeMore ? "See More" : "See Less"}
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

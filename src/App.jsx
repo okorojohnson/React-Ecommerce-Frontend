@@ -8,22 +8,35 @@ import { ProductsProvider } from "./context/ProductsContext";
 import { AuthProvider } from "./context/AuthContext";
 import Accountpage from "./pages/Accountpage";
 import ProductDetailspage from "./pages/ProductDetailspage";
+import { CartProvider } from "./context/CartContext";
+import { Toastprovider } from "./context/ToastContext";
 
 const App = () => {
   return (
     <div>
       <AuthProvider>
         <ProductsProvider>
-          <Router>
-            <Navbar />
-            <Routes>
-              <Route path="/" element={<Homepage />} />
-              <Route path="/Catalogue" element={<Cataloguepage />} />
-              <Route path="/account" element={<Accountpage />} />
-              <Route path="/products/:id" element={<ProductDetailspage />} />
-            </Routes>
-            <Footer />
-          </Router>
+          <CartProvider>
+            <Toastprovider>
+              <Router>
+                <Navbar />
+                <Routes>
+                  <Route path="/" element={<Homepage />} />
+                  <Route path="/Catalogue" element={<Cataloguepage />} />
+                  <Route path="/account" element={<Accountpage />} />
+                  <Route
+                    path="/products/:id"
+                    element={<ProductDetailspage />}
+                  />
+                  <Route
+                    path="/products/:sku"
+                    element={<ProductDetailspage />}
+                  />
+                </Routes>
+                <Footer />
+              </Router>
+            </Toastprovider>
+          </CartProvider>
         </ProductsProvider>
       </AuthProvider>
     </div>
