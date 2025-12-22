@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useAuth } from "../contexts/AuthContext";
-import { useCart } from "../contexts/CartContext";
+import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
 import { useLocation, useNavigate } from "react-router-dom";
 
 // all orders stored

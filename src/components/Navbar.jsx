@@ -23,23 +23,29 @@ const LINKS = [
 
 const Navbar = () => {
   const location = useLocation();
-  const isHome = location.pathname === "/"; // ✅ fixed duplicate
+  const isHome = location.pathname === "/"; // home resolver
   const [open, setOpen] = useState(false);
   const [solid, setSolid] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    // Apply solid nav when scrolled past threshold on Home
     if (!isHome) {
       setSolid(false);
       return;
     }
 
-    const onScroll = () => setSolid(window.scrollY > 10);
+    const onScroll = () => {
+      setSolid(window.scrollY > 10);
+    };
 
-    onScroll(); // initialize
+    // Initialize on mount in case page loads scrolled
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+    };
   }, [isHome]);
 
   const linkClass = (to) =>
@@ -75,7 +81,7 @@ const Navbar = () => {
 
   return (
     <>
-      {/* ========== Mobile Navbar ========== */}
+      {/* Mobile / small screens */}
       <nav
         className={`md:hidden fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${mobileBar}`}
       >
@@ -94,7 +100,7 @@ const Navbar = () => {
             )}
           </button>
 
-          <Link to="/" className="inline-flex items-center">
+          <Link to="/" className="inline-flex items-center" aria-label="Home">
             <img src="/sm_logo.svg" alt="SimpleWood" className="h-7" />
           </Link>
 
@@ -112,7 +118,6 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile Menu Drawer */}
         <div
           className={`fixed inset-0 z-50 md:hidden ${
             open ? "pointer-events-auto" : "pointer-events-none"
@@ -173,31 +178,30 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* ========== Desktop Navbar ========== */}
+      {/* Desktop / md+ */}
       <nav
         className={`hidden md:flex min-h-[170px] px-[150px] py-[25px] flex-col transition-colors duration-300 ${desktopBar}`}
       >
         <section className="flex items-center justify-between w-full">
-          {/* Search Bar */}
           <div className="min-w-[177px] min-h-[44px] bg-white rounded-full relative flex items-center justify-center px-4 border border-gray-200 shadow-sm">
             <input
               type="search"
-              className="bg-transparent placeholder:text-gray-400 border-none outline-none text-smBlack text-sm w-[277px] focus:ring-2 focus:ring-green-500/20 rounded-full"
+              className="bg-transparent placeholder:text-gray-400 border-none outline-none text-black text-sm w-[277px] focus:ring-2 focus:ring-green-500/20 rounded-full"
               placeholder="Search"
             />
             <LucideSearch className="text-[7px] h-4 w-4 absolute right-[16px] text-[#B5B5B5]" />
           </div>
 
-          {/* Logo */}
           <div>
-            <img
-              src="/sm_logo.svg"
-              alt="SimpleWood"
-              className={logoShadowClass}
-            />
+            <Link to="/" aria-label="Home">
+              <img
+                src="/sm_logo.svg"
+                alt="SimpleWood"
+                className={logoShadowClass}
+              />
+            </Link>
           </div>
 
-          {/* Language / Cart */}
           <div className="flex items-center justify-between gap-4 text-sm">
             <span className="flex items-center justify-center gap-2">
               <span>English</span> <ChevronDown className="w-4 h-4 mt-1" />
@@ -209,16 +213,16 @@ const Navbar = () => {
             <LucideHeart className="h-4 w-4 cursor-pointer" />
             <LucideUser className="h-4 w-4 cursor-pointer" />
 
-            <div className="relative">
-              <ShoppingBasket className="w-6 h-6" />
+            <Link to="/cart" className="relative inline-flex" aria-label="Cart">
               <span
-                className={`w-4 h-4 bg-smGreen text-white rounded-full flex items-center justify-center text-xs absolute -right-2 -top-2 ${
+                className={`w-4 h-4 bg-smGreen text-white p-2 bg-red-500 rounded-full flex items-center justify-center text-xs absolute -right-1 -top-1 ${
                   bump ? "animate-bounce" : ""
                 }`}
               >
                 {itemCount}
               </span>
-            </div>
+              <ShoppingBasket className="w-6 h-6" />
+            </Link>
           </div>
         </section>
 
